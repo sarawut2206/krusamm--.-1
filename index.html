@@ -9,10 +9,11 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#FBFAF7; --ink:#22241D; --olive:#33402C; --olive-2:#42502F;
-  --brass:#A9762F; --brass-2:#C69A55; --line:#E3DFD0; --line-2:#D7D3C4;
-  --muted:#6E6C5E; --ok:#3B6B4A; --danger:#9C3B2E; --chip:#EFEDE2;
-  --shadow:0 1px 2px rgba(30,32,22,.06),0 8px 24px -12px rgba(30,32,22,.18);
+  --paper:#FBFAF7; --ink:#1B2A18; --olive:#123A12; --olive-2:#1F6B1F;
+  --brass:#B8862E; --brass-2:#D9AE5C; --line:#DCE6D6; --line-2:#C9D6BE;
+  --muted:#5E6B58; --ok:#1B7A1B; --danger:#9C3B2E; --chip:#EBF3E6;
+  --green-vivid:#16C415;
+  --shadow:0 1px 2px rgba(18,58,18,.08),0 8px 24px -12px rgba(18,58,18,.22);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -27,11 +28,92 @@ body{
 /* Header */
 .top{background:var(--olive);color:#F3F1E7;padding:18px 0 16px;border-bottom:3px solid var(--brass)}
 .top .wrap{display:flex;align-items:center;gap:14px}
+.hgroup{flex:1;min-width:0}
 .crest{width:46px;height:46px;flex:none;border:2px solid var(--brass-2);border-radius:50%;
   display:grid;place-items:center;background:rgba(0,0,0,.12)}
 .crest svg{width:26px;height:26px}
 .top h1{font-family:"IBM Plex Sans Thai";font-weight:700;font-size:17px;margin:0;letter-spacing:.2px}
 .top p{margin:2px 0 0;font-size:12.5px;color:#CFD3C0;letter-spacing:.3px}
+.teacher-trigger{flex:none;width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.08);color:#E7E4D4;display:grid;place-items:center;cursor:pointer}
+.teacher-trigger svg{width:18px;height:18px}
+.teacher-trigger:active{background:rgba(255,255,255,.18)}
+
+/* ============ Teacher panel ============ */
+.tp-overlay{position:fixed;inset:0;z-index:200;background:var(--paper);display:none;flex-direction:column}
+.tp-overlay.show{display:flex}
+.tp-head{background:var(--olive);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;
+  border-bottom:3px solid var(--brass);flex:none}
+.tp-head h2{margin:0;font-size:16px;font-family:"IBM Plex Sans Thai";font-weight:700;flex:1}
+.tp-back{width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);
+  color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.tp-body{flex:1;overflow-y:auto;padding:16px}
+
+/* login step */
+.tp-login{max-width:340px;margin:40px auto;text-align:center}
+.tp-login p{color:var(--muted);font-size:14px;margin-bottom:16px}
+.tp-login input{width:100%;padding:13px 14px;font-size:16px;text-align:center;letter-spacing:2px;
+  border:1.5px solid var(--line-2);border-radius:10px;outline:none;font-family:"IBM Plex Mono"}
+.tp-login input:focus{border-color:var(--olive);box-shadow:0 0 0 3px rgba(18,58,18,.10)}
+.tp-login button{margin-top:12px;width:100%;padding:12px;border:0;border-radius:10px;background:var(--olive);
+  color:#fff;font-weight:600;font-size:15px;cursor:pointer;font-family:inherit}
+.tp-err{color:var(--danger);font-size:13px;margin-top:8px;min-height:18px}
+
+/* dashboard */
+.tp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.tp-stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.tp-stat .v{font-family:"IBM Plex Mono";font-weight:700;font-size:20px;color:var(--olive)}
+.tp-stat .l{font-size:11.5px;color:var(--muted);margin-top:2px}
+.tp-controls{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.tp-controls input[type=text]{width:100%;padding:11px 13px;border:1.5px solid var(--line-2);border-radius:10px;
+  font-size:15px;font-family:inherit;outline:none}
+.tp-controls input[type=text]:focus{border-color:var(--olive)}
+.tp-chiprow{display:flex;gap:6px;flex-wrap:wrap}
+.tp-chip{padding:7px 12px;border:1.5px solid var(--line-2);border-radius:20px;background:#fff;font-size:13px;
+  font-family:"IBM Plex Sans Thai";cursor:pointer;color:var(--ink)}
+.tp-chip.on{background:var(--olive);border-color:var(--olive);color:#fff}
+.tp-actions{display:flex;gap:8px;margin-bottom:14px}
+.tp-actions button{flex:1;padding:11px;border-radius:10px;border:0;font-family:"IBM Plex Sans Thai";
+  font-weight:600;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.tp-actions button svg{width:16px;height:16px}
+.tp-print-btn{background:var(--brass);color:#241a08}
+.tp-refresh-btn{background:var(--chip);color:var(--olive);border:1px solid var(--line-2) !important}
+
+.tp-list{display:flex;flex-direction:column;gap:8px}
+.tp-row{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 13px}
+.tp-row.pending{background:#FBF3EF;border-color:#EAD3C7}
+.tp-row-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.tp-row-top b{font-size:14.5px;font-weight:600}
+.tp-row-top .tag{font-family:"IBM Plex Mono";font-size:11px;color:var(--muted)}
+.tp-row-mid{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.tp-row-mid .cls{font-size:12.5px;color:var(--muted)}
+.tp-row-mid .amt{font-family:"IBM Plex Mono";font-weight:700;color:var(--olive-2);font-size:14px}
+.tp-status{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:20px}
+.tp-status.done{background:#E8F3E4;color:var(--ok)}
+.tp-status.pend{background:#F7E4D9;color:#9C5A2E}
+.tp-mini{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+.tp-mini span{font-family:"IBM Plex Mono";font-size:10.5px;background:var(--chip);color:var(--olive-2);
+  padding:2px 6px;border-radius:5px}
+.tp-empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
+
+/* printable teacher report (only visible when printing) */
+#teacherReport{display:none}
+@media print{
+  body.print-teacher>*{display:none !important}
+  body.print-teacher #teacherReport{display:block !important;position:static;color:#000;
+    font-family:"Noto Sans Thai",sans-serif}
+  @page{size:A4 landscape;margin:12mm}
+}
+.tr-head{text-align:center;border-bottom:2.5px solid #000;padding-bottom:8px;margin-bottom:10px}
+.tr-head h1{font-size:18px;margin:0}
+.tr-head p{margin:3px 0 0;font-size:12px}
+.tr-room{font-weight:700;font-size:13px;margin:14px 0 4px;padding:4px 0;border-bottom:1px solid #999}
+table.tr-tb{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:4px}
+table.tr-tb th,table.tr-tb td{border:1px solid #444;padding:4px 5px;text-align:center}
+table.tr-tb th{background:#eee}
+table.tr-tb td.nm{text-align:left}
+table.tr-tb tr.pend td{background:#fdf0ea}
+table.tr-tb tfoot td{font-weight:700;background:#f2f2f2}
 
 /* Section card */
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;margin-top:18px;
@@ -98,7 +180,7 @@ body{
 .cb{width:24px;height:24px;flex:none;border:2px solid var(--line-2);border-radius:7px;margin-top:2px;
   display:grid;place-items:center;cursor:pointer;background:#fff;transition:.12s}
 .cb svg{width:15px;height:15px;opacity:0;transform:scale(.6);transition:.12s;color:#fff}
-.item.on .cb{background:var(--olive);border-color:var(--olive)}
+.item.on .cb{background:var(--green-vivid);border-color:var(--green-vivid)}
 .item.on .cb svg{opacity:1;transform:scale(1)}
 .it-main{flex:1;min-width:0}
 .it-name{font-size:15px;font-weight:500;line-height:1.4}
@@ -151,12 +233,12 @@ textarea:focus{border-color:var(--olive);box-shadow:0 0 0 3px rgba(51,64,44,.10)
 .hint{font-size:12.5px;color:var(--muted);margin-top:14px;text-align:center;line-height:1.6}
 .hint b{color:var(--olive)}
 
-/* Print slip */
-#slip{display:none}
+/* Print system: any .printable can be shown via .active-print at print time */
+.printable{display:none}
 @media print{
   body>*{display:none !important}
-  #slip{display:block !important;position:static;padding:0;color:#000;font-family:"Noto Sans Thai",sans-serif}
-  @page{size:A4;margin:16mm}
+  .printable.active-print{display:block !important;position:static;padding:0;color:#000;font-family:"Noto Sans Thai",sans-serif}
+  @page{size:A4;margin:14mm}
 }
 .slip-inner{max-width:720px;margin:0 auto}
 .slip-head{text-align:center;border-bottom:2.5px solid #000;padding-bottom:10px;margin-bottom:4px}
@@ -171,10 +253,57 @@ table.slip-tb th{background:#eee;font-weight:700}
 table.slip-tb td.num,table.slip-tb th.num{text-align:right;font-family:"IBM Plex Mono"}
 table.slip-tb td.c,table.slip-tb th.c{text-align:center}
 table.slip-tb tfoot td{font-weight:700;font-size:15px;background:#f4f4f4}
+table.slip-tb thead{display:table-header-group}
 .slip-sign{display:flex;justify-content:space-between;margin-top:46px;gap:40px}
 .slip-sign div{flex:1;text-align:center;font-size:13px}
 .slip-sign .ln{border-top:1px dotted #000;margin:34px 12px 6px}
 .slip-note{margin-top:14px;font-size:13px}
+
+/* Teacher menu */
+.teacher-link{text-align:center;margin-top:10px}
+.tlink{background:none;border:0;color:var(--olive-2);font-family:inherit;font-size:12.5px;
+  text-decoration:underline;cursor:pointer;padding:6px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(18,58,18,.55);z-index:100;
+  display:none;align-items:center;justify-content:center;padding:14px}
+.modal-backdrop.show{display:flex}
+.modal{background:#fff;width:100%;max-width:680px;max-height:90vh;border-radius:16px;
+  display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow)}
+.modal-h{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
+  background:var(--olive);color:#fff;flex:none}
+.modal-h h3{margin:0;font-size:15px;font-family:"IBM Plex Sans Thai";font-weight:600}
+.modal-x{background:none;border:0;color:#fff;font-size:24px;cursor:pointer;line-height:1;padding:2px 8px}
+.modal-b{padding:16px;overflow:auto}
+#teacherGate label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+#teacherPass{width:100%;padding:12px 14px;font-size:16px;border:1.5px solid var(--line-2);
+  border-radius:10px;font-family:inherit;outline:none}
+#teacherPass:focus{border-color:var(--olive)}
+.tlogin-err{color:var(--danger);font-size:13px;margin-top:8px;min-height:16px}
+.tstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tstat{flex:1;min-width:118px;background:var(--chip);border-radius:10px;padding:10px 12px}
+.tstat b{display:block;font-family:"IBM Plex Mono";font-size:19px;color:var(--olive)}
+.tstat span{font-size:11.5px;color:var(--muted)}
+.tbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tbar input,.tbar select{flex:1;min-width:110px;padding:10px 12px;border:1.5px solid var(--line-2);
+  border-radius:9px;font-family:inherit;font-size:14px;outline:none}
+.tbtn{padding:10px 14px;border-radius:9px;border:1.5px solid var(--line-2);background:#fff;
+  font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
+.tbtn-gold{background:var(--brass);color:#241a08;border-color:var(--brass)}
+.ttable-wrap{overflow:auto;max-height:44vh;border:1px solid var(--line);border-radius:10px}
+table.ttable{width:100%;border-collapse:collapse;font-size:12.5px}
+table.ttable th,table.ttable td{padding:8px 9px;border-bottom:1px solid var(--line);
+  text-align:left;white-space:nowrap}
+table.ttable th{background:var(--chip);position:sticky;top:0}
+table.ttable tr.miss td{color:var(--danger)}
+.trow-print{border:0;background:none;color:var(--olive-2);font-weight:600;cursor:pointer;
+  font-family:inherit;font-size:12px;text-decoration:underline;padding:2px}
+
+/* Teacher print (checklist matrix) */
+.tp-legend{font-size:11.5px;margin:10px 0 14px;color:#000;line-height:1.7}
+table.tp-matrix th,table.tp-matrix td{font-size:11px;padding:5px 6px}
+table.tp-matrix td.num{font-family:"IBM Plex Mono"}
+.tp-missing{margin-top:20px;page-break-inside:avoid}
+.tp-missing h3{font-size:14px;margin:0 0 6px}
+#tpMissingList{font-size:12px;line-height:1.85;columns:2;column-gap:26px}
 </style>
 </head>
 <body>
@@ -186,10 +315,15 @@ table.slip-tb tfoot td{font-weight:700;font-size:15px;background:#f4f4f4}
         <path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/>
       </svg>
     </div>
-    <div>
+    <div class="hgroup">
       <h1>ใบสั่งจองเครื่องแต่งกาย นศท.</h1>
       <p>โรงเรียนมัธยมวัดหนองแขม &middot; นักศึกษาวิชาทหาร</p>
     </div>
+    <button class="teacher-trigger" id="teacherTrigger" title="เมนูครู" aria-label="เมนูครู">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </button>
   </div>
 </header>
 
@@ -245,6 +379,7 @@ table.slip-tb tfoot td{font-weight:700;font-size:15px;background:#f4f4f4}
     เลือกชื่อ &rarr; ติ๊กรายการที่สั่ง &rarr; กด <b>บันทึกการสั่งจอง</b><br>
     จากนั้นกด <b>พิมพ์ / บันทึก PDF</b> เพื่อเก็บหลักฐาน
   </p>
+  <p class="teacher-link"><button class="tlink" id="teacherOpenBtn">สำหรับครู &middot; ตรวจสอบการสั่งจอง</button></p>
 </div>
 
 <!-- Footer -->
@@ -269,8 +404,8 @@ table.slip-tb tfoot td{font-weight:700;font-size:15px;background:#f4f4f4}
 
 <div class="toast" id="toast"></div>
 
-<!-- Printable slip -->
-<div id="slip"><div class="slip-inner">
+<!-- Printable slip (per-student) -->
+<div id="slip" class="printable"><div class="slip-inner">
   <div class="slip-head">
     <h1>ใบสั่งจองเครื่องแต่งกาย นักศึกษาวิชาทหาร (นศท.)</h1>
     <p>โรงเรียนมัธยมวัดหนองแขม</p>
@@ -299,10 +434,67 @@ table.slip-tb tfoot td{font-weight:700;font-size:15px;background:#f4f4f4}
   </div>
 </div></div>
 
+<!-- Printable teacher summary matrix -->
+<div id="teacherPrint" class="printable"><div class="slip-inner">
+  <div class="slip-head">
+    <h1>สรุปรายการสั่งจองเครื่องแต่งกาย นศท. (ตรวจสอบรายคน)</h1>
+    <p>โรงเรียนมัธยมวัดหนองแขม &middot; พิมพ์เมื่อ <span id="tpDate">—</span></p>
+  </div>
+  <div class="tp-legend" id="tpLegend"></div>
+  <table class="slip-tb tp-matrix">
+    <thead><tr id="tpHeadRow"></tr></thead>
+    <tbody id="tpBody"></tbody>
+    <tfoot id="tpFoot"></tfoot>
+  </table>
+  <div class="tp-missing" id="tpMissingWrap" style="display:none">
+    <h3>รายชื่อที่ยังไม่ได้สั่งจอง (<span id="tpMissCount">0</span> คน)</h3>
+    <div id="tpMissingList"></div>
+  </div>
+</div></div>
+
+<!-- Teacher menu modal -->
+<div class="modal-backdrop" id="teacherBackdrop">
+  <div class="modal">
+    <div class="modal-h">
+      <h3>เมนูครู &middot; ตรวจสอบการสั่งจอง</h3>
+      <button class="modal-x" id="teacherClose">&times;</button>
+    </div>
+    <div class="modal-b">
+      <div id="teacherGate">
+        <label>รหัสผ่านครู</label>
+        <input type="password" id="teacherPass" placeholder="กรอกรหัสผ่าน">
+        <button class="btn btn-save" id="teacherLoginBtn" style="width:100%;justify-content:center;margin-top:10px">เข้าสู่ระบบ</button>
+        <div class="tlogin-err" id="teacherErr"></div>
+      </div>
+      <div id="teacherDash" style="display:none">
+        <div class="tstats" id="tstats"></div>
+        <div class="tbar">
+          <input type="text" id="tSearch" placeholder="ค้นหาชื่อ/รหัส...">
+          <select id="tFilter">
+            <option value="all">ทั้งหมด</option>
+            <option value="submitted">ส่งแล้ว</option>
+            <option value="missing">ยังไม่ส่ง</option>
+          </select>
+          <button class="tbtn" id="tRefresh">รีเฟรช</button>
+          <button class="tbtn tbtn-gold" id="tPrintAll">พิมพ์ตารางสรุปทั้งหมด</button>
+        </div>
+        <div class="ttable-wrap">
+          <table class="ttable">
+            <thead><tr>
+              <th>ชื่อ-สกุล</th><th>ชั้น/ห้อง</th><th>รายการ</th><th>รวม</th><th>เวลาบันทึก</th><th></th>
+            </tr></thead>
+            <tbody id="tBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ===================== CONFIG ===================== */
 /* วางลิงก์ Web App ของ Apps Script (ลงท้าย /exec) ตรงนี้ หลัง Deploy */
-const WEBAPP_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwAf6lxDdbubLZf571fwuTJkfmcxckgVdZNIyd6R6QQHkpnKdTS25V-s1kqs7uAAzBo-A/exec";
 
 const ITEMS = [
   {id:1, name:"ชุด รด. (แบบใหม่) เนื้อผ้าก้างปลา เกรด A พร้อมเครื่องหมาย+ป้ายชื่อ", unit:"ชุด", price:1200, col:"ชุดรด."},
@@ -517,7 +709,14 @@ $("checkBtn").addEventListener("click",async()=>{
   finally{ btn.disabled=false; btn.textContent="ตรวจสอบรายการที่เคยสั่งไว้"; }
 });
 
-/* ---------- Print / PDF ---------- */
+/* ---------- Print system (shared) ---------- */
+function doPrint(id){
+  document.querySelectorAll(".printable").forEach(x=>x.classList.remove("active-print"));
+  $(id).classList.add("active-print");
+  window.print();
+}
+
+/* ---------- Print / PDF (student's own) ---------- */
 $("printBtn").addEventListener("click",()=>{
   if(!picked){ toast("กรุณาเลือกชื่อก่อนพิมพ์","err"); return; }
   if(!cls.level||!cls.room){ toast("กรุณาเลือกระดับชั้นและห้องก่อนพิมพ์","err"); return; }
@@ -535,8 +734,180 @@ $("printBtn").addEventListener("click",()=>{
   const nv=$("note").value.trim();
   if(nv){ $("sNoteWrap").style.display=""; $("sNote").textContent=nv; }
   else $("sNoteWrap").style.display="none";
-  window.print();
+  doPrint("slip");
 });
+
+/* =====================================================
+   เมนูครู — ตรวจสอบการสั่งจองทั้งหมด
+   ===================================================== */
+let teacherKey = null;
+let teacherOrders = [];
+
+$("teacherOpenBtn").addEventListener("click",()=> $("teacherBackdrop").classList.add("show"));
+$("teacherClose").addEventListener("click",()=> $("teacherBackdrop").classList.remove("show"));
+$("teacherBackdrop").addEventListener("click",e=>{
+  if(e.target.id==="teacherBackdrop") $("teacherBackdrop").classList.remove("show");
+});
+
+async function teacherFetchList(key){
+  const res = await fetch(WEBAPP_URL+"?action=list&pass="+encodeURIComponent(key));
+  return res.json();
+}
+
+$("teacherLoginBtn").addEventListener("click", async()=>{
+  const pw=$("teacherPass").value.trim();
+  $("teacherErr").textContent="";
+  if(!pw){ $("teacherErr").textContent="กรุณากรอกรหัสผ่าน"; return; }
+  if(WEBAPP_URL.startsWith("PASTE_")){ $("teacherErr").textContent="ยังไม่ได้ตั้งค่าลิงก์ Apps Script"; return; }
+  const btn=$("teacherLoginBtn"); btn.disabled=true; btn.textContent="กำลังตรวจสอบ...";
+  try{
+    const data=await teacherFetchList(pw);
+    if(data.status==="ok"){
+      teacherKey=pw; teacherOrders=data.rows||[];
+      $("teacherGate").style.display="none";
+      $("teacherDash").style.display="";
+      renderTeacherDash();
+    }else{
+      $("teacherErr").textContent="รหัสผ่านไม่ถูกต้อง";
+    }
+  }catch(err){ $("teacherErr").textContent="เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง"; }
+  finally{ btn.disabled=false; btn.textContent="เข้าสู่ระบบ"; }
+});
+
+$("tRefresh").addEventListener("click", async()=>{
+  if(!teacherKey)return;
+  const btn=$("tRefresh"); btn.disabled=true; const old=btn.textContent; btn.textContent="กำลังโหลด...";
+  try{
+    const data=await teacherFetchList(teacherKey);
+    if(data.status==="ok"){ teacherOrders=data.rows||[]; renderTeacherDash(); toast("อัปเดตข้อมูลล่าสุดแล้ว ✓","ok"); }
+    else toast("โหลดข้อมูลไม่สำเร็จ","err");
+  }catch(err){ toast("เชื่อมต่อไม่สำเร็จ","err"); }
+  finally{ btn.disabled=false; btn.textContent=old; }
+});
+
+$("tSearch").addEventListener("input", renderTeacherDash);
+$("tFilter").addEventListener("change", renderTeacherDash);
+
+function levelRoomSort(a,b){
+  const la=a.level||"", lb=b.level||"";
+  if(la!==lb) return la.localeCompare(lb,"th");
+  const ra=+a.room||0, rb=+b.room||0;
+  if(ra!==rb) return ra-rb;
+  return (a.name||"").localeCompare(b.name||"","th");
+}
+function buildMissing(){
+  const codes=new Set(teacherOrders.map(o=>String(o.code)));
+  return STUDENTS.filter(s=>!codes.has(String(s.code)));
+}
+
+function renderTeacherDash(){
+  const q=($("tSearch").value||"").trim().toLowerCase();
+  const filter=$("tFilter").value;
+  const missing=buildMissing();
+  const totalMoney=teacherOrders.reduce((a,r)=>a+(Number(r.total)||0),0);
+
+  $("tstats").innerHTML=`
+    <div class="tstat"><b>${teacherOrders.length} / ${STUDENTS.length}</b><span>ส่งแล้ว / นักเรียนทั้งหมด</span></div>
+    <div class="tstat"><b>${missing.length}</b><span>ยังไม่ได้ส่ง</span></div>
+    <div class="tstat"><b>${baht(totalMoney)}</b><span>ยอดรวมทั้งหมด</span></div>`;
+
+  let rows=teacherOrders.slice().sort(levelRoomSort);
+  let missRows=missing.slice().sort((a,b)=>(a.name||"").localeCompare(b.name||"","th"));
+  if(q){
+    rows=rows.filter(r=>(r.name||"").toLowerCase().includes(q)||String(r.code).includes(q));
+    missRows=missRows.filter(s=>s.name.toLowerCase().includes(q)||s.code.includes(q));
+  }
+
+  let html="";
+  if(filter!=="missing"){
+    rows.forEach(r=>{
+      const itemCount=Object.keys(r.items||{}).length;
+      html+=`<tr>
+        <td>${r.name}</td><td>${r.level||"-"}/${r.room||"-"}</td>
+        <td>${itemCount} รายการ</td><td>${baht(Number(r.total)||0)}</td>
+        <td>${r.time||""}</td>
+        <td><button class="trow-print" data-code="${r.code}">พิมพ์</button></td>
+      </tr>`;
+    });
+  }
+  if(filter!=="submitted"){
+    missRows.forEach(s=>{
+      html+=`<tr class="miss"><td>${s.name}</td><td>-</td><td>ยังไม่สั่ง</td><td>-</td><td>-</td><td>-</td></tr>`;
+    });
+  }
+  $("tBody").innerHTML=html || `<tr><td colspan="6" style="text-align:center;color:var(--muted)">ไม่พบข้อมูล</td></tr>`;
+}
+
+document.getElementById("tBody").addEventListener("click", e=>{
+  const b=e.target.closest(".trow-print"); if(!b) return;
+  const order=teacherOrders.find(o=>String(o.code)===b.dataset.code);
+  if(order) printSlipFor(order);
+});
+
+function printSlipFor(order){
+  $("sName").textContent=order.name; $("sCode").textContent=order.code; $("sNo").textContent=order.no;
+  $("sClass").textContent=(order.level||"-")+"/"+(order.room||"-");
+  $("sDate").textContent=order.time||new Date().toLocaleDateString("th-TH",{year:"numeric",month:"long",day:"numeric"});
+  const rows2=ITEMS.filter(it=>order.items && order.items[it.col]).map(it=>({
+    name:it.name, unit:it.unit, price:it.price, qty:order.items[it.col], sum:it.price*order.items[it.col]
+  }));
+  $("sBody").innerHTML=rows2.map((r,i)=>
+    `<tr><td class="c">${i+1}</td><td>${r.name}</td>
+      <td class="c">${r.qty} ${r.unit}</td>
+      <td class="num">${r.price.toLocaleString("th-TH")}</td>
+      <td class="num">${r.sum.toLocaleString("th-TH")}</td></tr>`).join("");
+  $("sTotal").textContent=Number(order.total||0).toLocaleString("th-TH");
+  if(order.note){ $("sNoteWrap").style.display=""; $("sNote").textContent=order.note; }
+  else $("sNoteWrap").style.display="none";
+  doPrint("slip");
+}
+
+/* ---------- พิมพ์ตารางสรุปรวม (ตรวจสอบได้เร็ว) ---------- */
+$("tPrintAll").addEventListener("click",()=>{
+  if(!teacherOrders.length){ toast("ยังไม่มีข้อมูลให้พิมพ์","err"); return; }
+  buildTeacherPrint();
+  doPrint("teacherPrint");
+});
+
+function buildTeacherPrint(){
+  $("tpDate").textContent=new Date().toLocaleString("th-TH",{dateStyle:"long",timeStyle:"short"});
+  $("tpLegend").innerHTML="<b>รหัสรายการ:</b> "+ITEMS.map(it=>`${it.id}=${it.name}`).join(" &nbsp;&middot;&nbsp; ");
+
+  let head=`<th style="width:26px">#</th><th>ชื่อ-สกุล</th><th class="c">ชั้น/ห้อง</th>`;
+  ITEMS.forEach(it=> head+=`<th class="c" style="width:22px">${it.id}</th>`);
+  head+=`<th class="num">รวม(บาท)</th>`;
+  $("tpHeadRow").innerHTML=head;
+
+  const rows=teacherOrders.slice().sort(levelRoomSort);
+  const colSums=new Array(ITEMS.length).fill(0);
+  let grand=0, body="";
+  rows.forEach((r,i)=>{
+    body+=`<tr><td class="c">${i+1}</td><td>${r.name}</td><td class="c">${r.level||"-"}/${r.room||"-"}</td>`;
+    ITEMS.forEach((it,ci)=>{
+      const q=(r.items && r.items[it.col])||0;
+      colSums[ci]+=q;
+      body+=`<td class="c">${q?q:"&middot;"}</td>`;
+    });
+    grand+=Number(r.total)||0;
+    body+=`<td class="num">${Number(r.total||0).toLocaleString("th-TH")}</td></tr>`;
+  });
+  $("tpBody").innerHTML=body || `<tr><td colspan="${4+ITEMS.length}" class="c">ไม่มีข้อมูล</td></tr>`;
+
+  let foot=`<tr><td colspan="3" class="num">รวมจำนวนที่ต้องสั่งจากร้าน</td>`;
+  colSums.forEach(s=> foot+=`<td class="c">${s||"-"}</td>`);
+  foot+=`<td class="num">${grand.toLocaleString("th-TH")}</td></tr>`;
+  $("tpFoot").innerHTML=foot;
+
+  const missing=buildMissing().sort((a,b)=>(a.name||"").localeCompare(b.name||"","th"));
+  if(missing.length){
+    $("tpMissingWrap").style.display="";
+    $("tpMissCount").textContent=missing.length;
+    $("tpMissingList").innerHTML=missing.map(s=>`${s.no}. ${s.name} (${s.code})`).join("<br>");
+  }else{
+    $("tpMissingWrap").style.display="none";
+  }
+}
 </script>
+
 </body>
 </html>
