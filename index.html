@@ -260,9 +260,6 @@ table.slip-tb thead{display:table-header-group}
 .slip-note{margin-top:14px;font-size:13px}
 
 /* Teacher menu */
-.teacher-link{text-align:center;margin-top:10px}
-.tlink{background:none;border:0;color:var(--olive-2);font-family:inherit;font-size:12.5px;
-  text-decoration:underline;cursor:pointer;padding:6px}
 .modal-backdrop{position:fixed;inset:0;background:rgba(18,58,18,.55);z-index:100;
   display:none;align-items:center;justify-content:center;padding:14px}
 .modal-backdrop.show{display:flex}
@@ -379,7 +376,6 @@ table.tp-matrix td.num{font-family:"IBM Plex Mono"}
     เลือกชื่อ &rarr; ติ๊กรายการที่สั่ง &rarr; กด <b>บันทึกการสั่งจอง</b><br>
     จากนั้นกด <b>พิมพ์ / บันทึก PDF</b> เพื่อเก็บหลักฐาน
   </p>
-  <p class="teacher-link"><button class="tlink" id="teacherOpenBtn">สำหรับครู &middot; ตรวจสอบการสั่งจอง</button></p>
 </div>
 
 <!-- Footer -->
@@ -743,7 +739,7 @@ $("printBtn").addEventListener("click",()=>{
 let teacherKey = null;
 let teacherOrders = [];
 
-$("teacherOpenBtn").addEventListener("click",()=> $("teacherBackdrop").classList.add("show"));
+$("teacherTrigger").addEventListener("click",()=> $("teacherBackdrop").classList.add("show"));
 $("teacherClose").addEventListener("click",()=> $("teacherBackdrop").classList.remove("show"));
 $("teacherBackdrop").addEventListener("click",e=>{
   if(e.target.id==="teacherBackdrop") $("teacherBackdrop").classList.remove("show");
